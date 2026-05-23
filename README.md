@@ -12,6 +12,7 @@ Requirements:
 -------------------
 Installation steps:
 
+(Go to your program folder)
 1. composer install
 2. copy .env.example .env (in powershell)
 3. change contents .env file:
@@ -33,3 +34,12 @@ In php.ini file (path is C:/User/Program Files/php/php.ini) , uncomment -> exten
 8. php artisan session:table (might say migration already exists)
 9. php artisan migrate
 10. php artisan serve
+
+-------------------
+
+# MVP Spec
+
+- Users can register, login, logout and log workouts (view, edit, delete). 
+- They only see their own data.
+- Create workout = date, list of exercises to choose from with reps and weight (optional), user can name their workout.
+- Exercises are selected by the user from an existing list.
