@@ -35,6 +35,7 @@ In php.ini file (path is C:/User/Program Files/php/php.ini) , uncomment -> exten
 9. php artisan migrate
 10. php artisan serve
 
+0. When you write new databases, "php artisan migrate"
 -------------------
 
 # MVP Spec
@@ -43,3 +44,10 @@ In php.ini file (path is C:/User/Program Files/php/php.ini) , uncomment -> exten
 - They only see their own data.
 - Create workout = date, list of exercises to choose from with reps and weight (optional), user can name their workout.
 - Exercises are selected by the user from an existing list.
+
+-------------------
+
+# To Do
+
+- Do not allow "create workout" button to work or submit if the data is not allowed (date in past, empty fields, letters for ints)
+- Maybe don't force everything filled in for submissions of creating new workouts.

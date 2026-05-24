@@ -2,23 +2,29 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\PostController;
-use App\Models\Post;
+use App\Http\Controllers\WorkoutController;
+use App\Models\ExerciseDefinition;
 
 Route::get('/', function () {
-    $allPosts = [];
+    $allWorkouts = [];
+    $exerciseDefinitions = ExerciseDefinition::orderBy('category')->orderBy('name')->get();
+
     if (auth()->check()) {
-    $allPosts = auth()->user()->userPosts()->latest()->get(); # retrieve all posts associated with the currently authenticated user
+        $allWorkouts = auth()->user()->userWorkouts()->with(['workoutSets.exerciseDefinition'])->latest()->get();
     }
-    return view('home', ['posts' => $allPosts]);
+
+    return view('home', [
+        'workouts' => $allWorkouts,
+        'exerciseDefinitions' => $exerciseDefinitions,
+    ]);
 });
+
 
 Route::post('/register' , [UserController::class, 'register']);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/login', [UserController::class, 'login']);
 
-// Blog post related routes
-Route::post('/create-post', [PostController::class, 'createPost']);
-Route::get('/edit-post/{post}', [PostController::class, 'showEditScreen']);
-Route::put('/edit-post/{post}', [PostController::class, 'updatePost']);
-Route::delete('/delete-post/{post}', [PostController::class, 'deletePost']);
+Route::post('/create-workout', [WorkoutController::class, 'createWorkout']);
+Route::get('/edit-workout/{workout}', [WorkoutController::class, 'showEditScreen']);
+Route::put('/edit-workout/{workout}', [WorkoutController::class, 'updateWorkout']);
+Route::delete('/delete-workout/{workout}', [WorkoutController::class, 'deleteWorkout']);

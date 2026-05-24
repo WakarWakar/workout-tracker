@@ -30,8 +30,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function userPosts(){
-        return $this->hasMany(Post::class, 'user_id'); # define a one-to-many relationship between User and Post models, where the foreign key in the posts table is user_id
+    public function userWorkouts(){
+        return $this->hasMany(Workout::class, 'user_id');
     }
 
 }
