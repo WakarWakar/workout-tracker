@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExerciseCategory;
 use App\Models\ExerciseDefinition;
+use App\Models\MuscleWorked;
 use App\Models\Workout;
 use Illuminate\Http\Request;
 
@@ -16,11 +18,17 @@ class WorkoutController extends Controller
 
         return view('workouts', [
             'workouts' => $allWorkouts,
-            'exerciseDefinitions' => ExerciseDefinition::orderBy('category')->orderBy('name')->get(),
+            'exerciseDefinitions' => ExerciseDefinition::with(['muscleWorked', 'exerciseCategory'])->orderBy('name')->get(),
+            'muscleWorkedOptions' => MuscleWorked::orderBy('name')->get(),
+            'categoryOptions' => ExerciseCategory::orderBy('name')->get(),
         ]);
     }
 
     public function createWorkout(Request $request){
+        if (auth()->user()->isAdmin()) {
+            return redirect('/')->withErrors(['submission' => 'Admins cannot create workouts.']);
+        }
+
         $incomingFields = $request->validate([
             'name' => 'required',
             'date' => 'required|date',
@@ -40,23 +48,33 @@ class WorkoutController extends Controller
         ]);
 
         $this->syncWorkoutSets($workout, $incomingFields['workout_sets']);
-        return redirect('/'); 
+        return redirect('/')->with('status', 'Workout created successfully.'); 
     }
 
     public function showEditScreen(Workout $workout){
+        if (auth()->user()->isAdmin()) {
+            return redirect('/')->withErrors(['submission' => 'Admins cannot edit workouts.']);
+        }
+
         if (auth()->user()->id !== $workout->user_id) {
-            return redirect('/');
+            return redirect('/')->withErrors(['submission' => 'You can only edit your own workout.']);
         }
 
         $workout->load('workoutSets.exerciseDefinition');
 
         return view('edit-workout', [
             'workout' => $workout,
-            'exerciseDefinitions' => ExerciseDefinition::orderBy('category')->orderBy('name')->get(),
+            'exerciseDefinitions' => ExerciseDefinition::with(['muscleWorked', 'exerciseCategory'])->orderBy('name')->get(),
+            'muscleWorkedOptions' => MuscleWorked::orderBy('name')->get(),
+            'categoryOptions' => ExerciseCategory::orderBy('name')->get(),
         ]);
     }
 
     public function updateWorkout(Workout $workout, Request $request){
+        if (auth()->user()->isAdmin()) {
+            return redirect('/');
+        }
+
         if (auth()->user()->id !== $workout->user_id) {
             return redirect('/');
         }
@@ -79,14 +97,20 @@ class WorkoutController extends Controller
         ]);
 
         $this->syncWorkoutSets($workout, $incomingFields['workout_sets']);
-        return redirect('/');
+        return redirect('/')->with('status', 'Workout updated successfully.');
     }
 
     public function deleteWorkout(Workout $workout){
+        if (auth()->user()->isAdmin()) {
+            return redirect('/')->withErrors(['submission' => 'Admins cannot delete workouts.']);
+        }
+
         if (auth()->user()->id === $workout->user_id) { # ToDo least privilege check to ensure that only the owner of the workout can delete it
             $workout->delete();
+            return redirect('/')->with('status', 'Workout deleted successfully.');
         }
-        return redirect('/');
+
+        return redirect('/')->withErrors(['submission' => 'You can only delete your own workout.']);
     }
 
     private function syncWorkoutSets(Workout $workout, array $workoutSets): void

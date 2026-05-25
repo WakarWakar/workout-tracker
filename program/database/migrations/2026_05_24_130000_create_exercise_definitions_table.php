@@ -12,23 +12,69 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exercise_definitions', function (Blueprint $table) {
+        $exerciseSeedData = [
+            ['name' => 'bench press', 'muscles_worked' => 'chest, front delts, triceps', 'category' => 'front'],
+            ['name' => 'overhead press', 'muscles_worked' => 'shoulders, triceps', 'category' => 'front'],
+            ['name' => 'squat', 'muscles_worked' => 'quads, glutes, core', 'category' => 'legs'],
+            ['name' => 'deadlift', 'muscles_worked' => 'hamstrings, glutes, back', 'category' => 'back'],
+            ['name' => 'barbell row', 'muscles_worked' => 'lats, mid back, biceps', 'category' => 'back'],
+            ['name' => 'biceps curl', 'muscles_worked' => 'biceps', 'category' => 'arms'],
+            ['name' => 'triceps pushdown', 'muscles_worked' => 'triceps', 'category' => 'arms'],
+        ];
+
+        Schema::create('muscles_worked', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->string('name')->unique();
-            $table->text('muscles_worked');
-            $table->string('category');
+            $table->timestamps();
         });
 
-        DB::table('exercise_definitions')->insert([
-            ['name' => 'bench press', 'muscles_worked' => 'chest, front delts, triceps', 'category' => 'front', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'overhead press', 'muscles_worked' => 'shoulders, triceps', 'category' => 'front', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'squat', 'muscles_worked' => 'quads, glutes, core', 'category' => 'legs', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'deadlift', 'muscles_worked' => 'hamstrings, glutes, back', 'category' => 'back', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'barbell row', 'muscles_worked' => 'lats, mid back, biceps', 'category' => 'back', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'biceps curl', 'muscles_worked' => 'biceps', 'category' => 'arms', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'triceps pushdown', 'muscles_worked' => 'triceps', 'category' => 'arms', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->timestamps();
+        });
+
+        foreach (collect($exerciseSeedData)->pluck('muscles_worked')->unique() as $musclesWorkedName) {
+            DB::table('muscles_worked')->insert([
+                'name' => $musclesWorkedName,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        foreach (collect($exerciseSeedData)->pluck('category')->unique() as $categoryName) {
+            DB::table('categories')->insert([
+                'name' => $categoryName,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        Schema::create('exercise_definitions', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->foreignId('muscle_worked_id')->constrained('muscles_worked');
+            $table->foreignId('category_id')->constrained('categories');
+            $table->timestamps();
+        });
+
+        foreach ($exerciseSeedData as $exerciseDefinition) {
+            $muscleWorkedId = DB::table('muscles_worked')
+                ->where('name', $exerciseDefinition['muscles_worked'])
+                ->value('id');
+
+            $categoryId = DB::table('categories')
+                ->where('name', $exerciseDefinition['category'])
+                ->value('id');
+
+            DB::table('exercise_definitions')->insert([
+                'name' => $exerciseDefinition['name'],
+                'muscle_worked_id' => $muscleWorkedId,
+                'category_id' => $categoryId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**

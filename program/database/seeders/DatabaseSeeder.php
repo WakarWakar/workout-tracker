@@ -16,10 +16,16 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-
-        User::factory()->create([
+        // Create a standard test user. Password is `password` (set by the factory).
+        User::factory()->asUser()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+        ]);
+
+        // Create an admin user. Credentials: email `admin@example.com`, password `password`.
+        User::factory()->asAdmin()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
         ]);
     }
 }

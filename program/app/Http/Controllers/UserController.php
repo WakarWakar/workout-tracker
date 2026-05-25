@@ -16,6 +16,7 @@ class UserController extends Controller
         ]);
 
         $incomingFields['password'] = bcrypt($incomingFields['password']); # encrypt the password before saving it to the database
+        $incomingFields['role'] = 'user';
         $user = User::create($incomingFields); 
         auth()->login($user); # log the user in after registration
         return redirect('/'); # redirect the user to the home page after registration

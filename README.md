@@ -51,3 +51,5 @@ In php.ini file (path is C:/User/Program Files/php/php.ini) , uncomment -> exten
 
 - Do not allow "create workout" button to work or submit if the data is not allowed (date in past, empty fields, letters for ints)
 - Maybe don't force everything filled in for submissions of creating new workouts.
+- When creating exercise definitions fail -> the UI coloring is in frontend html, need change later
+- Create Many-To-Many relationship: One exercise hits multiple muscles. (currently only 1 "muscles_worked" per exercise -> not good)

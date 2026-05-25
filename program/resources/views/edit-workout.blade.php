@@ -7,6 +7,24 @@
 </head>
 <body>
     <h1>Edit Workout</h1>
+
+    @if (session('status'))
+        <div style="margin: 16px 0; padding: 12px; border: 1px solid #1f7a1f; background: #e9f8ea; color: #1f7a1f;">
+            {{ session('status') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div style="margin: 16px 0; padding: 12px; border: 1px solid #b42318; background: #fdecec; color: #b42318;">
+            <strong>Submission failed.</strong>
+            <ul style="margin: 8px 0 0 18px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="/edit-workout/{{$workout->id}}" method="POST">
         @csrf
         @method('PUT')
@@ -22,7 +40,7 @@
                             <option value="">Select exercise</option>
                             @foreach($exerciseDefinitions as $exerciseDefinition)
                                 <option value="{{ $exerciseDefinition->id }}" @selected($exerciseDefinition->id === $workoutSet->exercise_definition_id)>
-                                    {{ $exerciseDefinition->name }} ({{ $exerciseDefinition->category }})
+                                    {{ $exerciseDefinition->name }} ({{ $exerciseDefinition->exerciseCategory?->name }})
                                 </option>
                             @endforeach
                         </select>
@@ -42,7 +60,7 @@
             <select name="workout_sets[__INDEX__][exercise_definition_id]">
                 <option value="">Select exercise</option>
                 @foreach($exerciseDefinitions as $exerciseDefinition)
-                    <option value="{{ $exerciseDefinition->id }}">{{ $exerciseDefinition->name }} ({{ $exerciseDefinition->category }})</option>
+                    <option value="{{ $exerciseDefinition->id }}">{{ $exerciseDefinition->name }} ({{ $exerciseDefinition->exerciseCategory?->name }})</option>
                 @endforeach
             </select>
             <input name="workout_sets[__INDEX__][weight]" type="number" min="0" step="0.5" placeholder="Weight">
