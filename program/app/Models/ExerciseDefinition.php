@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExerciseDefinition extends Model
 {
-    protected $fillable = ['name', 'muscle_worked_id', 'category_id']; 
+    protected $fillable = ['name', 'category_id']; 
 
     public function workoutSets(){
         return $this->hasMany(WorkoutSet::class, 'exercise_definition_id');
     }
 
-    public function muscleWorked()
+    public function musclesWorked()
     {
-        return $this->belongsTo(MuscleWorked::class, 'muscle_worked_id');
+        return $this->belongsToMany(MuscleWorked::class, 'exercise_definition_muscle_worked', 'exercise_definition_id', 'muscle_worked_id');
     }
 
     public function exerciseCategory()

@@ -54,7 +54,7 @@ class MuscleWorkedController extends Controller
             return $redirect;
         }
 
-        if (ExerciseDefinition::where('muscle_worked_id', $muscleWorked->id)->exists()) {
+        if ($muscleWorked->exerciseDefinitions()->exists()) {
             return $this->failure('Cannot delete muscles worked "' . $muscleWorked->name . '" because it is used by an exercise definition.');
         }
 

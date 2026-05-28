@@ -12,7 +12,7 @@ use App\Models\MuscleWorked;
 
 Route::get('/', function () {
     $allWorkouts = [];
-    $exerciseDefinitions = ExerciseDefinition::with(['muscleWorked', 'exerciseCategory'])->orderBy('name')->get();
+    $exerciseDefinitions = ExerciseDefinition::with(['musclesWorked', 'exerciseCategory'])->orderBy('name')->get();
     $muscleWorkedOptions = MuscleWorked::orderBy('name')->get();
     $categoryOptions = ExerciseCategory::orderBy('name')->get();
 

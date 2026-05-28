@@ -25,11 +25,12 @@ class ExerciseDefinitionController extends Controller
 
         $incomingFields = $request->validate([
             'name' => 'required',
-            'muscle_worked_id' => 'required|exists:muscles_worked,id',
+            'muscle_worked_ids' => 'required|array',
+            'muscle_worked_ids.*' => 'exists:muscles_worked,id',
             'category_id' => 'required|exists:categories,id'
         ]);
 
-        $incomingFields['name'] = strip_tags($incomingFields['name']); # sanitize the name to prevent XSS attacks # ToDo check this security measure
+        $incomingFields['name'] = strip_tags($incomingFields['name']);
 
         if (ExerciseDefinition::where('name', $incomingFields['name'])->exists()) {
             return redirect('/')
@@ -37,7 +38,13 @@ class ExerciseDefinitionController extends Controller
                 ->withInput();
         }
 
-        ExerciseDefinition::create($incomingFields);
+        $exercise = ExerciseDefinition::create([
+            'name' => $incomingFields['name'],
+            'category_id' => $incomingFields['category_id'],
+        ]);
+
+        $exercise->musclesWorked()->sync($incomingFields['muscle_worked_ids']);
+
         return redirect('/')->with('status', 'Exercise definition "' . $incomingFields['name'] . '" created successfully.'); 
     }
 
@@ -49,7 +56,8 @@ class ExerciseDefinitionController extends Controller
 
         $incomingFields = $request->validate([
             'name' => 'required',
-            'muscle_worked_id' => 'required|exists:muscles_worked,id',
+            'muscle_worked_ids' => 'required|array',
+            'muscle_worked_ids.*' => 'exists:muscles_worked,id',
             'category_id' => 'required|exists:categories,id',
         ]);
 
@@ -65,9 +73,10 @@ class ExerciseDefinitionController extends Controller
 
         $exerciseDefinition->update([
             'name' => $incomingFields['name'],
-            'muscle_worked_id' => $incomingFields['muscle_worked_id'],
             'category_id' => $incomingFields['category_id'],
         ]);
+
+        $exerciseDefinition->musclesWorked()->sync($incomingFields['muscle_worked_ids']);
 
         return redirect('/')->with('status', 'Exercise definition "' . $incomingFields['name'] . '" updated successfully.');
     }

@@ -18,7 +18,7 @@ class WorkoutController extends Controller
 
         return view('workouts', [
             'workouts' => $allWorkouts,
-            'exerciseDefinitions' => ExerciseDefinition::with(['muscleWorked', 'exerciseCategory'])->orderBy('name')->get(),
+            'exerciseDefinitions' => ExerciseDefinition::with(['musclesWorked', 'exerciseCategory'])->orderBy('name')->get(),
             'muscleWorkedOptions' => MuscleWorked::orderBy('name')->get(),
             'categoryOptions' => ExerciseCategory::orderBy('name')->get(),
         ]);
@@ -64,7 +64,7 @@ class WorkoutController extends Controller
 
         return view('edit-workout', [
             'workout' => $workout,
-            'exerciseDefinitions' => ExerciseDefinition::with(['muscleWorked', 'exerciseCategory'])->orderBy('name')->get(),
+            'exerciseDefinitions' => ExerciseDefinition::with(['musclesWorked', 'exerciseCategory'])->orderBy('name')->get(),
             'muscleWorkedOptions' => MuscleWorked::orderBy('name')->get(),
             'categoryOptions' => ExerciseCategory::orderBy('name')->get(),
         ]);

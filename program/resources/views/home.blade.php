@@ -85,8 +85,7 @@
             <form action="/exercise-definitions" method="POST">
                 @csrf
                 <input name="name" type="text" placeholder="Exercise name">
-                <select name="muscle_worked_id">
-                    <option value="">Select muscles worked</option>
+                <select name="muscle_worked_ids[]" multiple size="4">
                     @foreach($muscleWorkedOptions as $muscleWorked)
                         <option value="{{ $muscleWorked->id }}">{{ $muscleWorked->name }}</option>
                     @endforeach
@@ -109,9 +108,9 @@
                         @csrf
                         @method('PUT')
                         <input name="name" type="text" value="{{ $exerciseDefinition->name }}" placeholder="Exercise name">
-                        <select name="muscle_worked_id">
+                        <select name="muscle_worked_ids[]" multiple size="4">
                             @foreach($muscleWorkedOptions as $muscleWorked)
-                                <option value="{{ $muscleWorked->id }}" @selected($exerciseDefinition->muscle_worked_id === $muscleWorked->id)>{{ $muscleWorked->name }}</option>
+                                <option value="{{ $muscleWorked->id }}" @selected($exerciseDefinition->musclesWorked->contains($muscleWorked->id))>{{ $muscleWorked->name }}</option>
                             @endforeach
                         </select>
                         <select name="category_id">

@@ -34,9 +34,16 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        foreach (collect($exerciseSeedData)->pluck('muscles_worked')->unique() as $musclesWorkedName) {
+        // collect and insert individual muscle names (split comma-separated lists)
+        $allMuscles = collect($exerciseSeedData)
+            ->pluck('muscles_worked')
+            ->map(function ($s) { return collect(array_map('trim', explode(',', $s))); })
+            ->flatten()
+            ->unique();
+
+        foreach ($allMuscles as $muscleName) {
             DB::table('muscles_worked')->insert([
-                'name' => $musclesWorkedName,
+                'name' => $muscleName,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -53,27 +60,42 @@ return new class extends Migration
         Schema::create('exercise_definitions', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->foreignId('muscle_worked_id')->constrained('muscles_worked');
             $table->foreignId('category_id')->constrained('categories');
             $table->timestamps();
         });
 
-        foreach ($exerciseSeedData as $exerciseDefinition) {
-            $muscleWorkedId = DB::table('muscles_worked')
-                ->where('name', $exerciseDefinition['muscles_worked'])
-                ->value('id');
+        // pivot table for many-to-many between exercise_definitions and muscles_worked
+        Schema::create('exercise_definition_muscle_worked', function (Blueprint $table) {
+            $table->foreignId('exercise_definition_id')->constrained('exercise_definitions');
+            $table->foreignId('muscle_worked_id')->constrained('muscles_worked');
+            $table->primary(['exercise_definition_id', 'muscle_worked_id']);
+        });
 
+        // insert exercise_definitions and pivot records
+        foreach ($exerciseSeedData as $exerciseDefinition) {
             $categoryId = DB::table('categories')
                 ->where('name', $exerciseDefinition['category'])
                 ->value('id');
 
-            DB::table('exercise_definitions')->insert([
+            $exerciseDefinitionId = DB::table('exercise_definitions')->insertGetId([
                 'name' => $exerciseDefinition['name'],
-                'muscle_worked_id' => $muscleWorkedId,
                 'category_id' => $categoryId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            foreach (array_map('trim', explode(',', $exerciseDefinition['muscles_worked'])) as $muscleName) {
+                $muscleId = DB::table('muscles_worked')
+                    ->where('name', $muscleName)
+                    ->value('id');
+
+                if ($muscleId) {
+                    DB::table('exercise_definition_muscle_worked')->insert([
+                        'exercise_definition_id' => $exerciseDefinitionId,
+                        'muscle_worked_id' => $muscleId,
+                    ]);
+                }
+            }
         }
     }
 
@@ -82,6 +104,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('exercise_definition_muscle_worked');
         Schema::dropIfExists('exercise_definitions');
+        Schema::dropIfExists('muscles_worked');
+        Schema::dropIfExists('categories');
     }
 };
