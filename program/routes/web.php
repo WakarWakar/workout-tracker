@@ -32,6 +32,13 @@ Route::get('/', function () {
 Route::post('/register' , [UserController::class, 'register']);
 Route::post('/logout', [UserController::class, 'logout']);
 Route::post('/login', [UserController::class, 'login']);
+// Provide a named GET login route so auth middleware can redirect unauthenticated users.
+// Otherwise you get error when you try to reach admin url without login credential
+// # ToDo: make urls that are locked behind login, redirect to login page by default.
+// # ToDo: when reaching url that doesn't exist, redirect to login by default (do this later).
+Route::get('/login', function () {
+    return redirect('/');
+})->name('login');
 
 Route::middleware('auth')->group(function () {
     Route::post('/create-workout', [WorkoutController::class, 'createWorkout']);
@@ -47,4 +54,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/exercise-definitions', [ExerciseDefinitionController::class, 'createExerciseDefinition']);
     Route::put('/exercise-definitions/{exerciseDefinition}', [ExerciseDefinitionController::class, 'updateExerciseDefinition']);
     Route::delete('/exercise-definitions/{exerciseDefinition}', [ExerciseDefinitionController::class, 'deleteExerciseDefinition']);
+
+    Route::get('/admin', function () {
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return redirect('/');
+        }
+
+        $exerciseDefinitions = ExerciseDefinition::with(['musclesWorked', 'exerciseCategory'])->orderBy('name')->get();
+        $muscleWorkedOptions = MuscleWorked::orderBy('name')->get();
+        $categoryOptions = ExerciseCategory::orderBy('name')->get();
+
+        return view('admin', [
+            'exerciseDefinitions' => $exerciseDefinitions,
+            'muscleWorkedOptions' => $muscleWorkedOptions,
+            'categoryOptions' => $categoryOptions,
+        ]);
+    });
 });

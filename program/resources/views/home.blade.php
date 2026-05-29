@@ -85,11 +85,15 @@
             <form action="/exercise-definitions" method="POST">
                 @csrf
                 <input name="name" type="text" placeholder="Exercise name">
-                <select name="muscle_worked_ids[]" multiple size="4">
+                <p>Add muscles worked:</p>
+                <div style="display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow: auto; padding: 4px; border: 1px solid #ddd;">
                     @foreach($muscleWorkedOptions as $muscleWorked)
-                        <option value="{{ $muscleWorked->id }}">{{ $muscleWorked->name }}</option>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="muscle_worked_ids[]" value="{{ $muscleWorked->id }}">
+                            <span>{{ $muscleWorked->name }}</span>
+                        </label>
                     @endforeach
-                </select>
+                </div>
                 <select name="category_id">
                     <option value="">Select category</option>
                     @foreach($categoryOptions as $category)
@@ -108,11 +112,14 @@
                         @csrf
                         @method('PUT')
                         <input name="name" type="text" value="{{ $exerciseDefinition->name }}" placeholder="Exercise name">
-                        <select name="muscle_worked_ids[]" multiple size="4">
+                        <div style="display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow: auto; padding: 4px; border: 1px solid #ddd;">
                             @foreach($muscleWorkedOptions as $muscleWorked)
-                                <option value="{{ $muscleWorked->id }}" @selected($exerciseDefinition->musclesWorked->contains($muscleWorked->id))>{{ $muscleWorked->name }}</option>
+                                <label style="display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" name="muscle_worked_ids[]" value="{{ $muscleWorked->id }}" @checked($exerciseDefinition->musclesWorked->contains($muscleWorked->id))>
+                                    <span>{{ $muscleWorked->name }}</span>
+                                </label>
                             @endforeach
-                        </select>
+                        </div>
                         <select name="category_id">
                             @foreach($categoryOptions as $category)
                                 <option value="{{ $category->id }}" @selected($exerciseDefinition->category_id === $category->id)>{{ $category->name }}</option>
