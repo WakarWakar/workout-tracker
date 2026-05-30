@@ -40,15 +40,19 @@ Route::get('/login', function () {
     return redirect('/');
 })->name('login');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () { # ToDo check this
     Route::post('/create-workout', [WorkoutController::class, 'createWorkout']);
     Route::get('/edit-workout/{workout}', [WorkoutController::class, 'showEditScreen']);
     Route::put('/edit-workout/{workout}', [WorkoutController::class, 'updateWorkout']);
     Route::delete('/delete-workout/{workout}', [WorkoutController::class, 'deleteWorkout']);
 
     Route::post('/muscles-worked', [MuscleWorkedController::class, 'create']);
+    Route::put('/muscles-worked/{muscleWorked}', [MuscleWorkedController::class, 'update']);
     Route::delete('/muscles-worked/{muscleWorked}', [MuscleWorkedController::class, 'delete']);
+
+
     Route::post('/categories', [CategoryController::class, 'create']);
+    Route::put('/categories/{category}', [CategoryController::class, 'update']);
     Route::delete('/categories/{category}', [CategoryController::class, 'delete']);
 
     Route::post('/exercise-definitions', [ExerciseDefinitionController::class, 'createExerciseDefinition']);

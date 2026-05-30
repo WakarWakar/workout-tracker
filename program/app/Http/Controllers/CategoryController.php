@@ -48,6 +48,27 @@ class CategoryController extends Controller
         return $this->success('Category "' . $incomingFields['name'] . '" created successfully.');
     }
 
+    public function update(Request $request, ExerciseCategory $category)
+    {
+        if ($redirect = $this->ensureAdmin()) {
+            return $redirect;
+        }
+
+        $incomingFields = $request->validate([
+            'name' => 'required',
+        ]);
+
+        $incomingFields['name'] = strip_tags($incomingFields['name']);
+
+        if (ExerciseCategory::where('name', $incomingFields['name'])->where('id', '!=', $category->id)->exists()) {
+            return $this->failure('The category name "' . $incomingFields['name'] . '" already exists.');
+        }
+
+        $category->update($incomingFields);
+
+        return $this->success('Category "' . $incomingFields['name'] . '" updated successfully.');
+    }
+
     public function delete(ExerciseCategory $category)
     {
         if ($redirect = $this->ensureAdmin()) {
