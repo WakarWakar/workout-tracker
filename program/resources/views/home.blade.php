@@ -50,6 +50,12 @@
                     <span>{{ $muscleWorked->name }}</span>
                     <form action="/muscles-worked/{{ $muscleWorked->id }}" method="POST">
                         @csrf
+                        @method('PUT')
+                        <input name="name" type="text" value="{{ $muscleWorked->name }}" placeholder="Muscles worked name">
+                        <button>Update</button>
+                    </form>
+                    <form action="/muscles-worked/{{ $muscleWorked->id }}" method="POST">
+                        @csrf
                         @method('DELETE')
                         <button>Delete muscles worked</button>
                     </form>
@@ -71,6 +77,12 @@
             @foreach($categoryOptions as $category)
                 <div style="background-color: lightgray; margin: 10px 0; padding: 10px; display: flex; justify-content: space-between; gap: 12px; align-items: center;">
                     <span>{{ $category->name }}</span>
+                    <form action="/categories/{{ $category->id }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input name="name" type="text" value="{{ $category->name }}" placeholder="Category name">
+                        <button>Update</button>
+                    </form>
                     <form action="/categories/{{ $category->id }}" method="POST">
                         @csrf
                         @method('DELETE')

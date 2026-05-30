@@ -48,6 +48,27 @@ class MuscleWorkedController extends Controller
         return $this->success('Muscles worked "' . $incomingFields['name'] . '" created successfully.');
     }
 
+    public function update(Request $request, MuscleWorked $muscleWorked)
+    {
+        if ($redirect = $this->ensureAdmin()) {
+            return $redirect;
+        }
+
+        $incomingFields = $request->validate([
+            'name' => 'required',
+        ]);
+
+        $incomingFields['name'] = strip_tags($incomingFields['name']); # sanitize input to prevent XSS attacks
+
+        if (MuscleWorked::where('name', $incomingFields['name'])->where('id', '!=', $muscleWorked->id)->exists()) {
+            return $this->failure('The muscles worked name "' . $incomingFields['name'] . '" already exists.');
+        }
+
+        $muscleWorked->update($incomingFields);
+
+        return $this->success('Muscles worked "' . $incomingFields['name'] . '" updated successfully.');
+    }
+
     public function delete(MuscleWorked $muscleWorked)
     {
         if ($redirect = $this->ensureAdmin()) {
