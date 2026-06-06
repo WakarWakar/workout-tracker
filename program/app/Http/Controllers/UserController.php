@@ -33,10 +33,15 @@ class UserController extends Controller
             'loginpassword' => 'required'
         ]);
 
-        if(auth()->attempt(['name' => $incomingFields['loginname'], 'password' => $incomingFields['loginpassword']])){ 
-            $request->session()->regenerate(); # regenerate the session to prevent session fixation attacks
-        } 
-        return redirect('/'); 
+        if (auth()->attempt(['name' => $incomingFields['loginname'], 'password' => $incomingFields['loginpassword']])) {
+            $request->session()->regenerate(); // prevent session fixation
+
+            // Prefer redirecting to the originally intended URL; fall back to role-based home.
+            $default = auth()->user()->isAdmin() ? '/admin' : '/';
+            return redirect()->intended($default);
+        }
+
+        return back()->withErrors(['login' => 'Invalid credentials'])->withInput();
         
     }
 }

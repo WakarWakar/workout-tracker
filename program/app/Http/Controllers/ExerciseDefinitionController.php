@@ -33,7 +33,7 @@ class ExerciseDefinitionController extends Controller
         $incomingFields['name'] = strip_tags($incomingFields['name']);
 
         if (ExerciseDefinition::where('name', $incomingFields['name'])->exists()) {
-            return redirect('/')
+            return back()
                 ->withErrors(['submission' => 'The exercise definition name "' . $incomingFields['name'] . '" already exists.'])
                 ->withInput();
         }
@@ -45,7 +45,7 @@ class ExerciseDefinitionController extends Controller
 
         $exercise->musclesWorked()->sync($incomingFields['muscle_worked_ids']);
 
-        return redirect('/')->with('status', 'Exercise definition "' . $incomingFields['name'] . '" created successfully.'); 
+        return back()->with('status', 'Exercise definition "' . $incomingFields['name'] . '" created successfully.'); 
     }
 
     public function updateExerciseDefinition(ExerciseDefinition $exerciseDefinition, Request $request)
@@ -66,7 +66,7 @@ class ExerciseDefinitionController extends Controller
         if (ExerciseDefinition::where('name', $incomingFields['name'])
             ->where('id', '!=', $exerciseDefinition->id)
             ->exists()) {
-            return redirect('/')
+            return back()
                 ->withErrors(['submission' => 'The exercise definition name "' . $incomingFields['name'] . '" already exists.'])
                 ->withInput();
         }
@@ -78,7 +78,7 @@ class ExerciseDefinitionController extends Controller
 
         $exerciseDefinition->musclesWorked()->sync($incomingFields['muscle_worked_ids']);
 
-        return redirect('/')->with('status', 'Exercise definition "' . $incomingFields['name'] . '" updated successfully.');
+        return back()->with('status', 'Exercise definition "' . $incomingFields['name'] . '" updated successfully.');
     }
 
     public function deleteExerciseDefinition(ExerciseDefinition $exerciseDefinition)
@@ -89,6 +89,6 @@ class ExerciseDefinitionController extends Controller
 
         $exerciseName = $exerciseDefinition->name;
         $exerciseDefinition->delete();
-        return redirect('/')->with('status', 'Exercise definition "' . $exerciseName . '" deleted successfully.');
+        return back()->with('status', 'Exercise definition "' . $exerciseName . '" deleted successfully.');
     }
 }
