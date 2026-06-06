@@ -19,12 +19,12 @@ class MuscleWorkedController extends Controller
 
     private function success(string $message)
     {
-        return redirect('/')->with('status', $message);
+        return back()->with('status', $message);
     }
 
     private function failure(string $message)
     {
-        return redirect('/')->withErrors(['submission' => $message])->withInput();
+        return back()->withErrors(['submission' => $message])->withInput();
     }
 
     public function create(Request $request)
