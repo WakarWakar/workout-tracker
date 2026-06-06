@@ -55,3 +55,4 @@ In php.ini file (path is C:/User/Program Files/php/php.ini) , uncomment -> exten
 - Create Many-To-Many relationship: One exercise hits multiple muscles. (currently only 1 "muscles_worked" per exercise -> not good)
 - Check 1 exercise has 1 instance of relationship for every muscle_worked
 - Learn what "pivot tables" are because your exercise_definition.list(worked_muscle) uses them.
+- Add 403 redirect to "cannot find page" page.
