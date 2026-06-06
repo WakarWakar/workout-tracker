@@ -40,16 +40,17 @@ Route::get('/login', function () {
     return redirect('/');
 })->name('login');
 
-Route::middleware('auth')->group(function () { # ToDo check this
+Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/create-workout', [WorkoutController::class, 'createWorkout']);
     Route::get('/edit-workout/{workout}', [WorkoutController::class, 'showEditScreen']);
     Route::put('/edit-workout/{workout}', [WorkoutController::class, 'updateWorkout']);
     Route::delete('/delete-workout/{workout}', [WorkoutController::class, 'deleteWorkout']);
+});
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/muscles-worked', [MuscleWorkedController::class, 'create']);
     Route::put('/muscles-worked/{muscleWorked}', [MuscleWorkedController::class, 'update']);
     Route::delete('/muscles-worked/{muscleWorked}', [MuscleWorkedController::class, 'delete']);
-
 
     Route::post('/categories', [CategoryController::class, 'create']);
     Route::put('/categories/{category}', [CategoryController::class, 'update']);
@@ -60,10 +61,6 @@ Route::middleware('auth')->group(function () { # ToDo check this
     Route::delete('/exercise-definitions/{exerciseDefinition}', [ExerciseDefinitionController::class, 'deleteExerciseDefinition']);
 
     Route::get('/admin', function () {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
-            return redirect('/');
-        }
-
         $exerciseDefinitions = ExerciseDefinition::with(['musclesWorked', 'exerciseCategory'])->orderBy('name')->get();
         $muscleWorkedOptions = MuscleWorked::orderBy('name')->get();
         $categoryOptions = ExerciseCategory::orderBy('name')->get();
