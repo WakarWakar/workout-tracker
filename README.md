@@ -59,3 +59,12 @@ In php.ini file (path is C:/User/Program Files/php/php.ini) , uncomment -> exten
 - Write tests.
 - Admin auto redirect to /admin
 - User auto redirect to /dashboard
+- Stay idiomatic
+
+--------------------
+
+# Security design choices
+
+- Obfuscation of links by returning 404 page when trying to access unauthorized pages.
+- Least privileges
+- Role based access control

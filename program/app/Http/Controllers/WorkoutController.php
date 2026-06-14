@@ -57,7 +57,7 @@ class WorkoutController extends Controller
         }
 
         if (auth()->user()->id !== $workout->user_id) {
-            return redirect('/')->withErrors(['submission' => 'You can only edit your own workout.']);
+            abort(404);
         }
 
         $workout->load('workoutSets.exerciseDefinition');
@@ -76,7 +76,7 @@ class WorkoutController extends Controller
         }
 
         if (auth()->user()->id !== $workout->user_id) {
-            return redirect('/');
+            abort(404);
         }
 
         $incomingFields = $request->validate([
@@ -105,12 +105,12 @@ class WorkoutController extends Controller
             return redirect('/')->withErrors(['submission' => 'Admins cannot delete workouts.']);
         }
 
-        if (auth()->user()->id === $workout->user_id) { # ToDo least privilege check to ensure that only the owner of the workout can delete it
-            $workout->delete();
-            return redirect('/')->with('status', 'Workout deleted successfully.');
+        if (auth()->user()->id !== $workout->user_id) {
+            abort(404);
         }
 
-        return redirect('/')->withErrors(['submission' => 'You can only delete your own workout.']);
+        $workout->delete();
+        return redirect('/')->with('status', 'Workout deleted successfully.');
     }
 
     private function syncWorkoutSets(Workout $workout, array $workoutSets): void
