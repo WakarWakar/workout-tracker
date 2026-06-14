@@ -8,7 +8,7 @@
 <body>
 
     <h1>404 - Page Not Found</h1>
-    <p>Sorry, the page you're looking for doesn't exist or may have been moved.</p>
+    <p>Sorry, the page you're looking for doesn't exist, may have been moved, or requires logging in.</p>
     <p><a href="/">Go back to home</a></p>
 
 </body>
