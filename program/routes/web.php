@@ -42,6 +42,11 @@ Route::get('/login', function () {
 
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/create-workout', [WorkoutController::class, 'createWorkout']);
+});
+
+// Ownership is enforced via WorkoutPolicy (abort 404 for non-owners, including admins),
+// so these don't need the role:user middleware.
+Route::middleware('auth')->group(function () {
     Route::get('/edit-workout/{workout}', [WorkoutController::class, 'showEditScreen']);
     Route::put('/edit-workout/{workout}', [WorkoutController::class, 'updateWorkout']);
     Route::delete('/delete-workout/{workout}', [WorkoutController::class, 'deleteWorkout']);
