@@ -57,7 +57,7 @@ In php.ini file (path is C:/User/Program Files/php/php.ini) , uncomment -> exten
 - Learn what "pivot tables" are because your exercise_definition.list(worked_muscle) uses them.
 - Add 403 redirect to "cannot find page" page.
 - Write tests.
-- Admin auto redirect to /admin
+- Admin auto redirect to /admin !!!
 - User auto redirect to /dashboard
 - Stay idiomatic
 
