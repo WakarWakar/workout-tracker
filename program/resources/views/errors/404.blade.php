@@ -9,8 +9,7 @@
 
     <h1>404 - Page Not Found</h1>
     <p>Sorry, the page you're looking for doesn't exist, may have been moved, or requires logging in.</p>
-    @php($home = auth()->check() && auth()->user()->isAdmin() ? '/admin' : '/')
-    <p><a href="{{ $home }}">Go back to home</a></p>
+    <p><a href="/">Go back to home</a></p>
 
 </body>
 </html>

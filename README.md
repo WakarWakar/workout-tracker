@@ -60,6 +60,7 @@ In php.ini file (path is C:/User/Program Files/php/php.ini) , uncomment -> exten
 - Admin auto redirect to /admin !!!
 - User auto redirect to /dashboard
 - Stay idiomatic
+- Make data in objects nullable, that should allow you to delete items that are being used by other items
 
 --------------------
 

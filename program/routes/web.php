@@ -11,6 +11,11 @@ use App\Models\ExerciseDefinition;
 use App\Models\MuscleWorked;
 
 Route::get('/', function () {
+    // '/' is the user/guest home; admins belong on '/admin'.
+    if (auth()->check() && auth()->user()->isAdmin()) {
+        return redirect('/admin');
+    }
+
     $allWorkouts = [];
     $exerciseDefinitions = ExerciseDefinition::with(['musclesWorked', 'exerciseCategory'])->orderBy('name')->get();
     $muscleWorkedOptions = MuscleWorked::orderBy('name')->get();

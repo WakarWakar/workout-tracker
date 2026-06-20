@@ -11,20 +11,6 @@ use Illuminate\Support\Facades\Gate;
 
 class WorkoutController extends Controller
 {
-    public function index(){
-        $allWorkouts = [];
-        if (auth()->check()) {
-            $allWorkouts = auth()->user()->userWorkouts()->with(['workoutSets.exerciseDefinition'])->latest()->get();
-        }
-
-        return view('workouts', [
-            'workouts' => $allWorkouts,
-            'exerciseDefinitions' => ExerciseDefinition::with(['musclesWorked', 'exerciseCategory'])->orderBy('name')->get(),
-            'muscleWorkedOptions' => MuscleWorked::orderBy('name')->get(),
-            'categoryOptions' => ExerciseCategory::orderBy('name')->get(),
-        ]);
-    }
-
     public function createWorkout(Request $request){
         $incomingFields = $request->validate([
             'name' => 'required',

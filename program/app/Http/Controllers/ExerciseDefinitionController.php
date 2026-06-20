@@ -9,20 +9,7 @@ use Illuminate\Http\Request;
 
 class ExerciseDefinitionController extends Controller
 {
-    private function ensureAdmin()
-    {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
-            return redirect('/');
-        }
-
-        return null;
-    }
-
     public function createExerciseDefinition(Request $request){
-        if ($redirect = $this->ensureAdmin()) {
-            return $redirect;
-        }
-
         $incomingFields = $request->validate([
             'name' => 'required',
             'muscle_worked_ids' => 'required|array',
@@ -50,10 +37,6 @@ class ExerciseDefinitionController extends Controller
 
     public function updateExerciseDefinition(ExerciseDefinition $exerciseDefinition, Request $request)
     {
-        if ($redirect = $this->ensureAdmin()) {
-            return $redirect;
-        }
-
         $incomingFields = $request->validate([
             'name' => 'required',
             'muscle_worked_ids' => 'required|array',
@@ -83,10 +66,6 @@ class ExerciseDefinitionController extends Controller
 
     public function deleteExerciseDefinition(ExerciseDefinition $exerciseDefinition)
     {
-        if ($redirect = $this->ensureAdmin()) {
-            return $redirect;
-        }
-
         $exerciseName = $exerciseDefinition->name;
         $exerciseDefinition->delete();
         return back()->with('status', 'Exercise definition "' . $exerciseName . '" deleted successfully.');
