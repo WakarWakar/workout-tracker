@@ -13,7 +13,7 @@ class RoleMiddleware
         $user = $request->user();
 
         if (! $user) {
-            return redirect('/');
+            abort(404);
         }
 
         $allowed = match ($role) {
@@ -23,7 +23,7 @@ class RoleMiddleware
         };
 
         if (! $allowed) {
-            return redirect('/');
+            abort(404);
         }
 
         return $next($request);

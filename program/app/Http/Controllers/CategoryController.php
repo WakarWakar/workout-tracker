@@ -8,15 +8,6 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    private function ensureAdmin()
-    {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
-            return redirect('/');
-        }
-
-        return null;
-    }
-
     private function success(string $message)
     {
         return back()->with('status', $message);
@@ -29,10 +20,6 @@ class CategoryController extends Controller
 
     public function create(Request $request)
     {
-        if ($redirect = $this->ensureAdmin()) {
-            return $redirect;
-        }
-
         $incomingFields = $request->validate([
             'name' => 'required',
         ]);
@@ -50,10 +37,6 @@ class CategoryController extends Controller
 
     public function update(Request $request, ExerciseCategory $category)
     {
-        if ($redirect = $this->ensureAdmin()) {
-            return $redirect;
-        }
-
         $incomingFields = $request->validate([
             'name' => 'required',
         ]);
@@ -71,10 +54,6 @@ class CategoryController extends Controller
 
     public function delete(ExerciseCategory $category)
     {
-        if ($redirect = $this->ensureAdmin()) {
-            return $redirect;
-        }
-
         if (ExerciseDefinition::where('category_id', $category->id)->exists()) {
             return $this->failure('Cannot delete category "' . $category->name . '" because it is used by an exercise definition.');
         }

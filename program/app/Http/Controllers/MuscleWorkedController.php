@@ -8,15 +8,6 @@ use Illuminate\Http\Request;
 
 class MuscleWorkedController extends Controller
 {
-    private function ensureAdmin()
-    {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
-            return redirect('/');
-        }
-
-        return null;
-    }
-
     private function success(string $message)
     {
         return back()->with('status', $message);
@@ -29,10 +20,6 @@ class MuscleWorkedController extends Controller
 
     public function create(Request $request)
     {
-        if ($redirect = $this->ensureAdmin()) {
-            return $redirect;
-        }
-
         $incomingFields = $request->validate([
             'name' => 'required',
         ]);
@@ -50,10 +37,6 @@ class MuscleWorkedController extends Controller
 
     public function update(Request $request, MuscleWorked $muscleWorked)
     {
-        if ($redirect = $this->ensureAdmin()) {
-            return $redirect;
-        }
-
         $incomingFields = $request->validate([
             'name' => 'required',
         ]);
@@ -71,10 +54,6 @@ class MuscleWorkedController extends Controller
 
     public function delete(MuscleWorked $muscleWorked)
     {
-        if ($redirect = $this->ensureAdmin()) {
-            return $redirect;
-        }
-
         if ($muscleWorked->exerciseDefinitions()->exists()) {
             return $this->failure('Cannot delete muscles worked "' . $muscleWorked->name . '" because it is used by an exercise definition.');
         }

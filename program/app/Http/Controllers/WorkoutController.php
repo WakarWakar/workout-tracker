@@ -7,28 +7,11 @@ use App\Models\ExerciseDefinition;
 use App\Models\MuscleWorked;
 use App\Models\Workout;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class WorkoutController extends Controller
 {
-    public function index(){
-        $allWorkouts = [];
-        if (auth()->check()) {
-            $allWorkouts = auth()->user()->userWorkouts()->with(['workoutSets.exerciseDefinition'])->latest()->get();
-        }
-
-        return view('workouts', [
-            'workouts' => $allWorkouts,
-            'exerciseDefinitions' => ExerciseDefinition::with(['musclesWorked', 'exerciseCategory'])->orderBy('name')->get(),
-            'muscleWorkedOptions' => MuscleWorked::orderBy('name')->get(),
-            'categoryOptions' => ExerciseCategory::orderBy('name')->get(),
-        ]);
-    }
-
     public function createWorkout(Request $request){
-        if (auth()->user()->isAdmin()) {
-            return redirect('/')->withErrors(['submission' => 'Admins cannot create workouts.']);
-        }
-
         $incomingFields = $request->validate([
             'name' => 'required',
             'date' => 'required|date',
@@ -52,13 +35,7 @@ class WorkoutController extends Controller
     }
 
     public function showEditScreen(Workout $workout){
-        if (auth()->user()->isAdmin()) {
-            return redirect('/')->withErrors(['submission' => 'Admins cannot edit workouts.']);
-        }
-
-        if (auth()->user()->id !== $workout->user_id) {
-            abort(404);
-        }
+        Gate::authorize('update', $workout);
 
         $workout->load('workoutSets.exerciseDefinition');
 
@@ -71,13 +48,7 @@ class WorkoutController extends Controller
     }
 
     public function updateWorkout(Workout $workout, Request $request){
-        if (auth()->user()->isAdmin()) {
-            return redirect('/');
-        }
-
-        if (auth()->user()->id !== $workout->user_id) {
-            abort(404);
-        }
+        Gate::authorize('update', $workout);
 
         $incomingFields = $request->validate([
             'name' => 'required',
@@ -101,13 +72,7 @@ class WorkoutController extends Controller
     }
 
     public function deleteWorkout(Workout $workout){
-        if (auth()->user()->isAdmin()) {
-            return redirect('/')->withErrors(['submission' => 'Admins cannot delete workouts.']);
-        }
-
-        if (auth()->user()->id !== $workout->user_id) {
-            abort(404);
-        }
+        Gate::authorize('delete', $workout);
 
         $workout->delete();
         return redirect('/')->with('status', 'Workout deleted successfully.');
