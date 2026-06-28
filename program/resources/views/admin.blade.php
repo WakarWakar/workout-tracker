@@ -1,161 +1,183 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Admin</title>
-</head>
-<body>
+@extends('layouts.app')
 
-    @auth
-    <p>Welcome, {{ auth()->user()->name }} ({{ auth()->user()->role }})!</p>
-    <form action="/logout" method="POST">
-        @csrf
-        <button>Logout</button>
-    </form>
+@section('title', 'Admin | Workout Tracker')
 
-    <h1>Admin</h1>
-
-    @if (session('status'))
-        <div style="margin: 16px 0; padding: 12px; border: 1px solid #1f7a1f; background: #e9f8ea; color: #1f7a1f;">
-            {{ session('status') }}
-        </div>
-    @endif
-
-    @if ($errors->any())
-        <div style="margin: 16px 0; padding: 12px; border: 1px solid #b42318; background: #fdecec; color: #b42318;">
-            <strong>Submission failed.</strong>
-            <ul style="margin: 8px 0 0 18px;">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    @if(auth()->user()->isAdmin())
-        <div style="margin-top: 16px; border: 1px solid black; padding: 10px;">
-            <h2>Create muscles worked</h2>
-            <form action="/muscles-worked" method="POST" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                @csrf
-                <input name="name" type="text" placeholder="Muscles worked name">
-                <button>Create muscles worked</button>
-            </form>
+@section('content')
+@if(auth()->user()->isAdmin())
+    <div class="space-y-10">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">Admin</h1>
+            <p class="mt-1 text-sm text-gray-500">Manage muscles, categories and exercise definitions.</p>
         </div>
 
-        <div style="border: 1px solid black; margin-top: 16px; padding: 10px;">
-            <h2>Manage muscles worked</h2>
-            @foreach($muscleWorkedOptions as $muscleWorked)
-                <div style="background-color: lightgray; margin: 10px 0; padding: 10px; display: flex; justify-content: space-between; gap: 12px; align-items: center;">
-                    <span>{{ $muscleWorked->name }}</span>
-                    <form action="/muscles-worked/{{ $muscleWorked->id }}" method="POST">
+        {{-- Muscles worked --}}
+        <section class="space-y-4">
+            <h2 class="text-lg font-semibold text-gray-900">Muscles worked</h2>
+            <div class="grid gap-4 lg:grid-cols-2">
+                <div class="card">
+                    <h3 class="card-title text-base">Add muscle</h3>
+                    <form action="/muscles-worked" method="POST" class="mt-4 flex gap-2">
                         @csrf
-                        @method('PUT')
-                        <input name="name" type="text" value="{{ $muscleWorked->name }}" placeholder="Muscles worked name">
-                        <button>Update</button>
-                    </form>
-                    <form action="/muscles-worked/{{ $muscleWorked->id }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button>Delete muscles worked</button>
+                        <input name="name" type="text" class="input" placeholder="Muscle name">
+                        <button class="btn btn-primary shrink-0">Add</button>
                     </form>
                 </div>
-            @endforeach
-        </div>
+                <div class="card">
+                    <h3 class="card-title text-base">Manage</h3>
+                    <div class="mt-4 space-y-2">
+                        @forelse($muscleWorkedOptions as $muscleWorked)
+                            <div class="flex flex-wrap items-center gap-2 rounded-lg border border-gray-100 bg-gray-50 p-2">
+                                <form action="/muscles-worked/{{ $muscleWorked->id }}" method="POST" class="flex flex-1 gap-2">
+                                    @csrf
+                                    @method('PUT')
+                                    <input name="name" type="text" value="{{ $muscleWorked->name }}" class="input">
+                                    <button class="btn btn-secondary btn-sm shrink-0">Save</button>
+                                </form>
+                                <form action="/muscles-worked/{{ $muscleWorked->id }}" method="POST" onsubmit="return confirm('Delete this muscle?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-500">None yet.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <div style="margin-top: 16px; border: 1px solid black; padding: 10px;">
-            <h2>Create categories</h2>
-            <form action="/categories" method="POST" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                @csrf
-                <input name="name" type="text" placeholder="Category name">
-                <button>Create category</button>
-            </form>
-        </div>
-
-        <div style="border: 1px solid black; margin-top: 16px; padding: 10px;">
-            <h2>Manage categories</h2>
-            @foreach($categoryOptions as $category)
-                <div style="background-color: lightgray; margin: 10px 0; padding: 10px; display: flex; justify-content: space-between; gap: 12px; align-items: center;">
-                    <span>{{ $category->name }}</span>
-                    <form action="/categories/{{ $category->id }}" method="POST">
+        {{-- Categories --}}
+        <section class="space-y-4">
+            <h2 class="text-lg font-semibold text-gray-900">Categories</h2>
+            <div class="grid gap-4 lg:grid-cols-2">
+                <div class="card">
+                    <h3 class="card-title text-base">Add category</h3>
+                    <form action="/categories" method="POST" class="mt-4 flex gap-2">
                         @csrf
-                        @method('PUT')
-                        <input name="name" type="text" value="{{ $category->name }}" placeholder="Category name">
-                        <button>Update</button>
-                    </form>
-                    <form action="/categories/{{ $category->id }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button>Delete category</button>
+                        <input name="name" type="text" class="input" placeholder="Category name">
+                        <button class="btn btn-primary shrink-0">Add</button>
                     </form>
                 </div>
-            @endforeach
-        </div>
-
-        <div style="margin-top: 16px; border: 1px solid black; padding: 10px;">
-            <h2>Create exercise definition</h2>
-            <form action="/exercise-definitions" method="POST">
-                @csrf
-                <input name="name" type="text" placeholder="Exercise name">
-                <p>Add muscles worked:</p>
-                <div style="display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow: auto; padding: 4px; border: 1px solid #ddd;">
-                    @foreach($muscleWorkedOptions as $muscleWorked)
-                        <label style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" name="muscle_worked_ids[]" value="{{ $muscleWorked->id }}">
-                            <span>{{ $muscleWorked->name }}</span>
-                        </label>
-                    @endforeach
+                <div class="card">
+                    <h3 class="card-title text-base">Manage</h3>
+                    <div class="mt-4 space-y-2">
+                        @forelse($categoryOptions as $category)
+                            <div class="flex flex-wrap items-center gap-2 rounded-lg border border-gray-100 bg-gray-50 p-2">
+                                <form action="/categories/{{ $category->id }}" method="POST" class="flex flex-1 gap-2">
+                                    @csrf
+                                    @method('PUT')
+                                    <input name="name" type="text" value="{{ $category->name }}" class="input">
+                                    <button class="btn btn-secondary btn-sm shrink-0">Save</button>
+                                </form>
+                                <form action="/categories/{{ $category->id }}" method="POST" onsubmit="return confirm('Delete this category?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-500">None yet.</p>
+                        @endforelse
+                    </div>
                 </div>
-                <select name="category_id">
-                    <option value="">Select category</option>
-                    @foreach($categoryOptions as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </select>
-                <button>Create exercise</button>
-            </form>
-        </div>
+            </div>
+        </section>
 
-        <div style="border: 1px solid black; margin-top: 16px; padding: 10px;">
-            <h2>Manage exercise definitions</h2>
-            @foreach($exerciseDefinitions as $exerciseDefinition)
-                <div style="background-color: lightgray; margin: 10px 0; padding: 10px;">
-                    <form action="/exercise-definitions/{{ $exerciseDefinition->id }}" method="POST" style="display: grid; gap: 8px; grid-template-columns: 2fr 2fr 1fr auto; align-items: end;">
-                        @csrf
-                        @method('PUT')
-                        <input name="name" type="text" value="{{ $exerciseDefinition->name }}" placeholder="Exercise name">
-                        <div style="display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow: auto; padding: 4px; border: 1px solid #ddd;">
-                            @foreach($muscleWorkedOptions as $muscleWorked)
-                                <label style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" name="muscle_worked_ids[]" value="{{ $muscleWorked->id }}" @checked($exerciseDefinition->musclesWorked->contains($muscleWorked->id))>
+        {{-- Exercise definitions --}}
+        <section class="space-y-4">
+            <h2 class="text-lg font-semibold text-gray-900">Exercise definitions</h2>
+
+            <div class="card">
+                <h3 class="card-title text-base">Add exercise</h3>
+                <form action="/exercise-definitions" method="POST" class="mt-4 space-y-4">
+                    @csrf
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="label">Name</label>
+                            <input name="name" type="text" class="input" placeholder="Exercise name">
+                        </div>
+                        <div>
+                            <label class="label">Category</label>
+                            <select name="category_id" class="input">
+                                <option value="">Select category</option>
+                                @foreach($categoryOptions as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="label">Muscles worked</span>
+                        <div class="grid max-h-40 grid-cols-2 gap-2 overflow-auto rounded-lg border border-gray-200 p-3 sm:grid-cols-3">
+                            @forelse($muscleWorkedOptions as $muscleWorked)
+                                <label class="flex items-center gap-2 text-sm text-gray-700">
+                                    <input type="checkbox" name="muscle_worked_ids[]" value="{{ $muscleWorked->id }}" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-300">
                                     <span>{{ $muscleWorked->name }}</span>
                                 </label>
-                            @endforeach
+                            @empty
+                                <p class="text-sm text-gray-500">Add a muscle first.</p>
+                            @endforelse
                         </div>
-                        <select name="category_id">
-                            @foreach($categoryOptions as $category)
-                                <option value="{{ $category->id }}" @selected($exerciseDefinition->category_id === $category->id)>{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                        <button>Update</button>
-                    </form>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="btn btn-primary">Create exercise</button>
+                    </div>
+                </form>
+            </div>
 
-                    <form action="/exercise-definitions/{{ $exerciseDefinition->id }}" method="POST" style="margin-top: 8px;">
-                        @csrf
-                        @method('DELETE')
-                        <button>Delete exercise</button>
-                    </form>
-                </div>
-            @endforeach
-        </div>
-    @else
-        <div style="margin-top: 16px; border: 1px solid black; padding: 10px;">
-            <h2>Access denied</h2>
-            <p>You do not have permission to view this page.</p>
-        </div>
-    @endif
+            <div class="space-y-3">
+                @forelse($exerciseDefinitions as $exerciseDefinition)
+                    <div class="card">
+                        <form action="/exercise-definitions/{{ $exerciseDefinition->id }}" method="POST" class="space-y-4">
+                            @csrf
+                            @method('PUT')
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label class="label">Name</label>
+                                    <input name="name" type="text" value="{{ $exerciseDefinition->name }}" class="input">
+                                </div>
+                                <div>
+                                    <label class="label">Category</label>
+                                    <select name="category_id" class="input">
+                                        @foreach($categoryOptions as $category)
+                                            <option value="{{ $category->id }}" @selected($exerciseDefinition->category_id === $category->id)>{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="label">Muscles worked</span>
+                                <div class="grid max-h-40 grid-cols-2 gap-2 overflow-auto rounded-lg border border-gray-200 p-3 sm:grid-cols-3">
+                                    @foreach($muscleWorkedOptions as $muscleWorked)
+                                        <label class="flex items-center gap-2 text-sm text-gray-700">
+                                            <input type="checkbox" name="muscle_worked_ids[]" value="{{ $muscleWorked->id }}" @checked($exerciseDefinition->musclesWorked->contains($muscleWorked->id)) class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-300">
+                                            <span>{{ $muscleWorked->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="flex justify-end border-t border-gray-100 pt-4">
+                                <button class="btn btn-secondary btn-sm">Save changes</button>
+                            </div>
+                        </form>
 
-    @endauth
-
-</body>
-</html>
+                        <form action="/exercise-definitions/{{ $exerciseDefinition->id }}" method="POST" onsubmit="return confirm('Delete this exercise?');" class="mt-2 flex justify-end">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-danger btn-sm">Delete exercise</button>
+                        </form>
+                    </div>
+                @empty
+                    <p class="text-sm text-gray-500">No exercises yet.</p>
+                @endforelse
+            </div>
+        </section>
+    </div>
+@else
+    <div class="card mx-auto max-w-md text-center">
+        <h2 class="card-title">Access denied</h2>
+        <p class="mt-2 text-sm text-gray-500">You do not have permission to view this page.</p>
+    </div>
+@endif
+@endsection

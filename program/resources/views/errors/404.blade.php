@@ -1,15 +1,12 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Page Not Found - Workout Tracker</title>
-</head>
-<body>
+@extends('layouts.app')
 
-    <h1>404 - Page Not Found</h1>
-    <p>Sorry, the page you're looking for doesn't exist, may have been moved, or requires logging in.</p>
-    <p><a href="/">Go back to home</a></p>
+@section('title', 'Page Not Found | Workout Tracker')
 
-</body>
-</html>
+@section('content')
+<div class="mx-auto max-w-md py-12 text-center">
+    <p class="text-5xl font-bold text-indigo-600">404</p>
+    <h1 class="mt-4 text-xl font-semibold text-gray-900">Page not found</h1>
+    <p class="mt-2 text-sm text-gray-500">Sorry, the page you're looking for doesn't exist, may have been moved, or requires logging in.</p>
+    <a href="/" class="btn btn-primary mt-6">Go back home</a>
+</div>
+@endsection

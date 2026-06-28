@@ -10,6 +10,10 @@ Requirements:
 - C:\Program Files\MySQL\MySQL Server 8.0\bin
 
 -------------------
+Requirements (frontend):
+- Install Node.js (v20+), which includes npm. Check with: node --version
+
+-------------------
 Installation steps:
 
 (Go to your program folder)
@@ -33,9 +37,30 @@ In php.ini file (path is C:/User/Program Files/php/php.ini) , uncomment -> exten
 7. php artisan key:generate
 8. php artisan session:table (might say migration already exists)
 9. php artisan migrate
-10. php artisan serve
+10. npm install            (installs Tailwind, Vite and frontend deps)
+11. php artisan serve
 
 0. When you write new databases, "php artisan migrate"
+-------------------
+
+# Frontend (Tailwind + Vite)
+
+Styling is Tailwind CSS, compiled by Vite. The Blade views load the compiled
+assets via @vite(...) in resources/views/layouts/app.blade.php.
+
+Run ONE of the following (from the program folder):
+
+- Local development (live reload of CSS/JS while `php artisan serve` runs):
+    npm run dev
+
+- One-off / production build (writes compiled assets to public/build):
+    npm run build
+
+Notes:
+- `npm run dev` must stay running in its own terminal alongside `php artisan serve`.
+- If pages look unstyled, you either forgot `npm install`, or you have neither
+  `npm run dev` running nor a `npm run build` output present.
+- After pulling changes that touch CSS/JS, re-run `npm install` then `npm run build`.
 -------------------
 
 # MVP Spec
